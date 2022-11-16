@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dao.ItemRepository;
 import com.example.demo.domain.Item;
+import com.example.demo.dto.ItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

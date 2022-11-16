@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.config.Arguments;
 import com.example.demo.dao.BoxRepository;
 import com.example.demo.domain.Box;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +13,13 @@ import java.util.Optional;
 public class BoxService {
 
     private final BoxRepository boxRepository;
+    private final Arguments arguments;
 
     public Optional<Box> getItem(long id) {
         return boxRepository.findById(id);
     }
 
-    public Box createItem(Box box) {
+    public Box saveItem(Box box) {
         return boxRepository.save(box);
     }
 

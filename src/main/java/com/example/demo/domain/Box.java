@@ -5,11 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@XmlRootElement
 public class Box {
 
     @Id
