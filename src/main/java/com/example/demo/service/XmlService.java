@@ -3,21 +3,19 @@ package com.example.demo.service;
 import com.example.demo.config.Arguments;
 import com.example.demo.dao.BoxRepository;
 import com.example.demo.dao.ItemRepository;
+import com.example.demo.domain.Box;
 import com.example.demo.domain.Item;
+import com.example.demo.dto.BoxDto;
 import com.example.demo.dto.ItemDto;
 import com.example.demo.mapper.MapStructMapper;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,58 +31,106 @@ public class XmlService {
     private final BoxRepository boxRepository;
     private final Arguments arguments;
     private final MapStructMapper mapStructMapper;
-    // non thread safe
-    String idBox = "";
 
-    public Arguments loadDataFromXml() throws ParserConfigurationException, IOException, SAXException {
-        String filePath = "/home/marialutteur/code/alfa-test/src/main/resources/example.xml";
+    // non thread safe
+    Optional<Node> boxIdOpt = Optional.empty();
+    Integer boxId = null;
+
+    public void loadDataFromXml() throws ParserConfigurationException, IOException, SAXException {
+
+        Set<Map.Entry<String, String>> entries = arguments.getType().entrySet();
+        Iterator<Map.Entry<String, String>> iterator = entries.iterator();
+        String path = null;
+        String type = null;
+
+        for (Iterator<Map.Entry<String, String>> it = iterator; it.hasNext(); ) {
+            Map.Entry<String, String> m = it.next();
+            if (m.getKey().equals("path")) {
+                path = m.getValue();
+            }
+            if (m.getKey().equals("type")) {
+                type = m.getValue();
+            }
+
+        }
+        String filePath = null;
+
+        switch (type) {
+            case "file":
+                filePath = path;
+                break;
+            case "classpath":
+
+                break;
+            case "url":
+
+                break;
+        }
+
         File xmlFile = new File(filePath);
+
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(xmlFile);
 
         document.getDocumentElement().normalize();
 
-        final List<String> l = new ArrayList<>();
-        return parse(document, l, document.getDocumentElement());
+        parse(document);
     }
 
-    private Arguments parse(final Document document, final List<String> list, final Element element) {
+    private void parse(Document document) {
+        parseBoxes(document.getDocumentElement());
+        parseItems(document.getDocumentElement());
+    }
+
+    private void parseItems(final Element element) {
 
         NodeList children = element.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
 
             Node node = children.item(i);
-            if (node.getNodeName().equals("Box")) {
-                idBox = node.getAttributes().getNamedItem("id").getNodeValue();
-            }
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 if (node.getNodeName().equals("Item")) {
+                    Node nodeId = node.getParentNode().getAttributes().getNamedItem("id");
+                    boxIdOpt = Optional.ofNullable(nodeId);
+                    boxIdOpt.ifPresentOrElse(s ->
+                            boxId = Integer.parseInt(s.getNodeValue()), () -> boxId = null);
+
                     String id = node.getAttributes().getNamedItem("id").getTextContent();
                     Optional<Node> optColor = Optional.ofNullable(node.getAttributes().getNamedItem("color"));
                     String color = "";
                     if (optColor.isPresent()) {
                         color = optColor.get().getNodeValue();
                     }
-                    arguments.getMap().put(id, new AbstractMap.SimpleEntry<>(color, idBox));
+
+                    ItemDto itemDto = new ItemDto(Integer.parseInt(id), boxId, color);
+                    Item entity = mapStructMapper.dtoToItem(itemDto);
+                    itemRepository.save(entity);
                 }
-                list.add(node.getNodeName() + " " + node.getAttributes().getNamedItem("id"));
-                parse(document, list, (Element) node);
+                parseItems((Element) node);
             }
         }
-        return arguments;
     }
 
-    public void loadXmlToDB(Arguments arguments) {
-        Map<String, Map.Entry<String, String>> map = arguments.getMap();
-        for (int i = 1; i < map.size(); i++) {
-            Map.Entry<String, String> entry = map.get(String.valueOf(i));
-            String color = entry.getKey();
-            String idBox = entry.getValue();
+    private void parseBoxes(final Element element) {
+        NodeList children = element.getChildNodes();
 
-            ItemDto itemDto = new ItemDto(i, Integer.parseInt(idBox), color);
-            Item entity = mapStructMapper.dtoToItem(itemDto);
-            itemRepository.save(entity);
+        for (int i = 0; i < children.getLength(); i++) {
+
+            Node node = children.item(i);
+            if (node.getNodeName().equals("Box")) {
+                String id = node.getAttributes().getNamedItem("id").getNodeValue();
+                Node nodeId = node.getParentNode().getAttributes().getNamedItem("id");
+                boxIdOpt = Optional.ofNullable(nodeId);
+                boxIdOpt.ifPresent(s ->
+                        boxId = Integer.parseInt(s.getNodeValue()));
+                BoxDto boxDto = new BoxDto(Integer.parseInt(id), boxId);
+                Box entity = mapStructMapper.dtoToBox(boxDto);
+                boxRepository.save(entity);
+
+                parseBoxes((Element) node);
+
+            }
         }
     }
 

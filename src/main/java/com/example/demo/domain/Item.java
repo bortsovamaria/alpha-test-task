@@ -20,7 +20,7 @@ public class Item {
     private Integer id;
 
     @Column(name = "contained_in")
-    private Integer containedIn;
+    private Integer contained;
 
     @Nullable
     private String color;

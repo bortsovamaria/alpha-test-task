@@ -15,9 +15,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Box {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "contained_in")
-    private Integer containedIn;
+    private Integer contained;
 }

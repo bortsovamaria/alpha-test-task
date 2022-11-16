@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ItemDto {
+public class BoxDto {
 
     private Integer id;
+
     private Integer contained;
-    private String color;
 }
