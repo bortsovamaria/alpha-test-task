@@ -92,7 +92,6 @@ public class XmlService {
                 break;
             case "classpath":
                 URL resource = this.getClass().getClassLoader().getResource(path);
-//                Resource resource = new ClassPathResource(path);
                 if (isNull(resource)) {
                     throw new IllegalArgumentException("Unknown file path");
                 }
