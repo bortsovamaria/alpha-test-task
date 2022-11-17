@@ -9,6 +9,8 @@ import com.example.demo.dto.BoxDto;
 import com.example.demo.dto.ItemDto;
 import com.example.demo.mapper.MapStructMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -21,7 +23,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
+
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +49,8 @@ public class XmlService {
         String path = null;
         String type = null;
 
-        for (Iterator<Map.Entry<String, String>> it = iterator; it.hasNext(); ) {
-            Map.Entry<String, String> m = it.next();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> m = iterator.next();
             if (m.getKey().equals("path")) {
                 path = m.getValue();
             }
@@ -53,18 +59,9 @@ public class XmlService {
             }
 
         }
-        String filePath = null;
-
-        switch (type) {
-            case "file":
-                filePath = path;
-                break;
-            case "classpath":
-
-                break;
-            case "url":
-
-                break;
+        String filePath = getFilePath(path, type);
+        if (isNull(filePath)) {
+            throw new IllegalArgumentException("Unknown file path");
         }
 
         File xmlFile = new File(filePath);
@@ -76,6 +73,28 @@ public class XmlService {
         document.getDocumentElement().normalize();
 
         parse(document);
+    }
+
+    private String getFilePath(String path, String type) throws MalformedURLException {
+        if (isNull(type)) {
+            return "";
+        }
+        String filePath = null;
+
+        switch (type) {
+            case "file":
+                filePath = path;
+                break;
+            case "classpath":
+                Resource resource = new ClassPathResource(path);
+                filePath = resource.getFilename();
+                break;
+            case "url":
+                URL url = new URL(path);
+                filePath = url.getFile();
+                break;
+        }
+        return filePath;
     }
 
     private void parse(Document document) {

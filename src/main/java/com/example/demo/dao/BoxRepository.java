@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface BoxRepository extends CrudRepository<Box, Long> {
     List<Box> getBoxesByContained(Integer id);
+    List<Box> getBoxesById(Integer id);
 }

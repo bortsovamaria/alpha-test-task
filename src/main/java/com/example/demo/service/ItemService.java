@@ -8,10 +8,8 @@ import com.example.demo.model.BodyRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -22,15 +20,13 @@ public class ItemService {
 
     public List<Integer> getIdsOfItemsByColor(BodyRequest bodyRequest) {
         List<Box> boxes = boxRepository.getBoxesByContained(bodyRequest.getBox());
-        List<List<Item>> lists = boxes.stream()
-                .map(m -> itemRepository.getItemsByColorAndContained(bodyRequest.getColor(), m.getId()))
-                .flatMap(Stream::of)
-                .collect(Collectors.toList());
+        boxes.addAll(boxRepository.getBoxesById((bodyRequest.getBox())));
 
-//        List<Item> items = itemRepository.getItemsByColorAndContained(bodyRequest.getColor(), boxes);
-//        return items.stream()
-//                .map(Item::getId)
-//                .collect(Collectors.toList());
-        return new ArrayList<>();
+        return boxes.stream()
+                .map(m -> itemRepository.getItemsByColorAndContained(bodyRequest.getColor(), m.getId()))
+                .map(l -> l.stream().map(Item::getId).collect(Collectors.toList()))
+                .flatMap(List::stream)
+                .sorted()
+                .collect(Collectors.toList());
     }
 }
