@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.config.Arguments;
+import com.example.demo.config.DataOfFile;
 import com.example.demo.dao.BoxRepository;
 import com.example.demo.dao.ItemRepository;
 import com.example.demo.domain.Box;
@@ -9,6 +9,9 @@ import com.example.demo.dto.BoxDto;
 import com.example.demo.dto.ItemDto;
 import com.example.demo.mapper.MapStructMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.internal.util.IOUtils;
+import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -23,19 +26,21 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
 import static java.util.Objects.isNull;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class XmlService {
 
     private final ItemRepository itemRepository;
     private final BoxRepository boxRepository;
-    private final Arguments arguments;
+    private final DataOfFile dataOfFile;
     private final MapStructMapper mapStructMapper;
 
     // non thread safe
@@ -44,7 +49,7 @@ public class XmlService {
 
     public void loadDataFromXml() throws ParserConfigurationException, IOException, SAXException {
 
-        Set<Map.Entry<String, String>> entries = arguments.getType().entrySet();
+        Set<Map.Entry<String, String>> entries = dataOfFile.getType().entrySet();
         Iterator<Map.Entry<String, String>> iterator = entries.iterator();
         String path = null;
         String type = null;
@@ -86,8 +91,13 @@ public class XmlService {
                 filePath = path;
                 break;
             case "classpath":
-                Resource resource = new ClassPathResource(path);
-                filePath = resource.getFilename();
+                URL resource = this.getClass().getClassLoader().getResource(path);
+//                Resource resource = new ClassPathResource(path);
+                if (isNull(resource)) {
+                    throw new IllegalArgumentException("Unknown file path");
+                }
+
+                filePath = resource.getFile();
                 break;
             case "url":
                 URL url = new URL(path);
@@ -122,7 +132,11 @@ public class XmlService {
                         color = optColor.get().getNodeValue();
                     }
 
-                    ItemDto itemDto = new ItemDto(Integer.parseInt(id), boxId, color);
+                    ItemDto itemDto =
+                            new ItemDto()
+                                    .setId(Integer.parseInt(id))
+                                    .setContained(boxId)
+                                    .setColor(color);
                     Item entity = mapStructMapper.dtoToItem(itemDto);
                     itemRepository.save(entity);
                 }
@@ -143,7 +157,9 @@ public class XmlService {
                 boxIdOpt = Optional.ofNullable(nodeId);
                 boxIdOpt.ifPresent(s ->
                         boxId = Integer.parseInt(s.getNodeValue()));
-                BoxDto boxDto = new BoxDto(Integer.parseInt(id), boxId);
+                BoxDto boxDto = new BoxDto()
+                        .setId(Integer.parseInt(id))
+                        .setContained(boxId);
                 Box entity = mapStructMapper.dtoToBox(boxDto);
                 boxRepository.save(entity);
 

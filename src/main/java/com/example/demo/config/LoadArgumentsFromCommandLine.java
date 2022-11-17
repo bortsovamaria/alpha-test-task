@@ -10,21 +10,22 @@ import org.springframework.context.annotation.Configuration;
 public class LoadArgumentsFromCommandLine implements ApplicationRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(LoadArgumentsFromCommandLine.class);
-    private final Arguments arguments;
+    private final DataOfFile dataOfFile;
 
-    public LoadArgumentsFromCommandLine(Arguments arguments) {
-        this.arguments = arguments;
+    public LoadArgumentsFromCommandLine(DataOfFile dataOfFile) {
+        this.dataOfFile = dataOfFile;
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         logger.info("------------------------------------");
 
         String s = args.getOptionValues("type.path").get(0);
-        String[] split = s.split(":");
-        arguments.getType().put("type", split[0]);
-        arguments.getType().put("path", split[1]);
-        logger.info(String.valueOf(arguments));
+        String first = s.substring(0, s.indexOf(":"));
+        String second = s.substring(s.indexOf(":") + 1);
+        dataOfFile.getType().put("type", first);
+        dataOfFile.getType().put("path", second);
+        logger.info(String.valueOf(dataOfFile));
 
         logger.info("------------------------------------");
     }
