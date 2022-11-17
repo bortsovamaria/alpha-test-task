@@ -4,7 +4,7 @@ Examples:
 
     file:
     
-     mvn spring-boot:run -Drun.arguments=--type.path=/home/marialutteur/code/alfa-test/src/main/resources/example.xml
+     mvn spring-boot:run -Drun.arguments=--type.path=file:/home/marialutteur/code/alfa-test/src/main/resources/example.xml
      
     classpath:
     
@@ -12,7 +12,7 @@ Examples:
      
     url:
     
-     mvn spring-boot:run -Drun.arguments=--type.url=file:/home/marialutteur/code/alfa-test/src/main/resources/example.xml
+     mvn spring-boot:run -Drun.arguments=--type.path=url:file:/home/marialutteur/code/alfa-test/src/main/resources/example.xml
      
 1. http://localhost:8080/load - загрузить xml
 2. http://localhost:8080/test - получить id итемов
