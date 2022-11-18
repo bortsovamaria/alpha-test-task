@@ -22,13 +22,12 @@ import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = CommonController.class)
+@WebMvcTest(controllers = XmlController.class)
 @EnableJpaRepositories()
-class CommonControllerTest {
+class XmlControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,34 +42,6 @@ class CommonControllerTest {
     private ItemService itemService;
     @MockBean
     private XmlService xmlService;
-
-    @Test
-    void getItemsIds() throws Exception {
-        List<Box> boxes = new ArrayList<>();
-        Box box = new Box();
-        box.setId(2);
-        boxes.add(box);
-        when(boxRepository.save(box)).thenReturn(box);
-
-        List<ItemDto> items = new ArrayList<>();
-        items.add(new ItemDto().setId(1).setContained(2).setColor("red"));
-        items.add(new ItemDto().setId(2).setContained(2).setColor("blue"));
-
-        when(itemRepository.getItemsByColorAndContained("color", 2)).thenReturn(new ArrayList<>());
-
-        when(itemService.getIdsOfItemsByColor(
-                new BodyRequest())).thenReturn(new ArrayList<>());
-
-        BodyRequest bodyRequest = new BodyRequest().setBox(2).setColor("red");
-
-        mockMvc.perform(post("/test")
-                .content(gson.toJson(bodyRequest))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn();
-
-    }
 
     @Test
     void loadXml() throws Exception {
@@ -96,8 +67,8 @@ class CommonControllerTest {
                 );
 
         mockMvc.perform(get("/load")
-        .content(gson.toJson(bodyRequest))
-        .contentType(MediaType.APPLICATION_JSON))
+                .content(gson.toJson(bodyRequest))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
