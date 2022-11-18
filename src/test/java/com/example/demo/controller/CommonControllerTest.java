@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,7 +63,7 @@ class CommonControllerTest {
 
         BodyRequest bodyRequest = new BodyRequest().setBox(2).setColor("red");
 
-        mockMvc.perform(get("/test")
+        mockMvc.perform(post("/test")
                 .content(gson.toJson(bodyRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

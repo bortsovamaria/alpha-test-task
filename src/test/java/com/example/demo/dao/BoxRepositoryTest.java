@@ -3,18 +3,33 @@ package com.example.demo.dao;
 import com.example.demo.domain.Box;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import javax.persistence.EntityManager;
+import javax.sql.DataSource;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class BoxRepositoryTest {
 
     @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
     private BoxRepository boxRepository;
+
+    @Test
+    void contextLoads() {
+        assertNotNull(entityManager);
+        assertNotNull(dataSource);
+    }
 
     @Test
     void getBoxesContained() {

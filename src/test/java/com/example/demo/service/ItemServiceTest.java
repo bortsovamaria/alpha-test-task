@@ -21,7 +21,7 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@AutoConfigureTestDatabase
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ItemServiceTest {
 
     @Autowired
@@ -35,21 +35,10 @@ class ItemServiceTest {
     ItemRepository itemRepository;
     @MockBean
     BoxRepository boxRepository;
-    @MockBean
-    private XmlService xmlService;
 
     @Test
     void getIdsOfItemsByColor() {
-        List<Box> boxes = new ArrayList<>();
-        Box box = new Box();
-        box.setId(1);
-        boxes.add(box);
-        Box secondBox = new Box();
-        box.setId(2);
-        boxes.add(box);
-        when(boxRepository.save(box)).thenReturn(box);
-        when(boxRepository.getBoxes(anyInt())).thenReturn(new ArrayList<>());
-        when(boxRepository.getBoxes(anyInt())).thenReturn(new ArrayList<>());
+        when(boxRepository.getBoxes(anyInt())).thenReturn(List.of(1));
 
         List<Item> items = new ArrayList<>();
         Item firstItem = new Item();
@@ -61,16 +50,12 @@ class ItemServiceTest {
         firstItem.setId(2);
         firstItem.setContained(1);
         firstItem.setColor("blue");
-
-        when(itemRepository.save(firstItem)).thenReturn(firstItem);
-        when(itemRepository.save(secondItem)).thenReturn(secondItem);
-
         items.add(firstItem);
         items.add(secondItem);
 
-        Item item = items.get(1);
+        when(itemRepository.saveAll(items)).thenReturn(new ArrayList<>());
         when(itemRepository.getItemsByColorAndContained("red", 1))
-                .thenReturn(List.of(item));
+                .thenReturn(List.of(firstItem));
 
         BodyRequest bodyRequest = new BodyRequest().setBox(1).setColor("red");
         List<Integer> response = itemService.getIdsOfItemsByColor(bodyRequest);
