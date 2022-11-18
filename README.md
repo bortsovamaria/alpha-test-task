@@ -75,6 +75,6 @@ mvn spring-boot:run -Drun.arguments=--customArgument=custom
     
      mvn spring-boot:run -Drun.arguments=--type.path=url:file:/home/marialutteur/code/alfa-test/src/main/resources/example.xml
      
-1. http://localhost:8080/load - загрузить xml (GET) - параметры задаются в аргументах
-
+1. http://localhost:8080/load - загрузить xml (GET) - параметры задаются в аргументах командной строки
+ 
 2. http://localhost:8080/test - получить id итемов (POST) - request содержит id коробки, в котором содержатся итемы, и цвет итема.
