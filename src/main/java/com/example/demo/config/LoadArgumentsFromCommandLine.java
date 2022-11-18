@@ -21,10 +21,10 @@ public class LoadArgumentsFromCommandLine implements ApplicationRunner {
         logger.info("------------------------------------");
 
         String s = args.getOptionValues("type.path").get(0);
-        String first = s.substring(0, s.indexOf(":"));
-        String second = s.substring(s.indexOf(":") + 1);
-        dataOfFile.getType().put("type", first);
-        dataOfFile.getType().put("path", second);
+        String type = s.substring(0, s.indexOf(":"));
+        String path = s.substring(s.indexOf(":") + 1);
+        dataOfFile.setType(type);
+        dataOfFile.setPath(path);
         logger.info(String.valueOf(dataOfFile));
 
         logger.info("------------------------------------");

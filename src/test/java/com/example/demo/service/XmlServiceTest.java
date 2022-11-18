@@ -66,10 +66,9 @@ class XmlServiceTest {
 
         Path resourceDirectory = Paths.get("src","test", "resources", "test.xml");
         String absolutePath = resourceDirectory.toFile().getAbsolutePath();
-        HashMap<String, String> map = new HashMap<>();
-        map.put("type", "file");
-        map.put("path", absolutePath);
-        dataOfFile.setType(map);
+
+        dataOfFile.setType("file");
+        dataOfFile.setPath(absolutePath);
 
         xmlService.loadDataFromXml();
 
