@@ -16,41 +16,64 @@
 
 Пример такого файла:
 
-<?xml version="1.0" encoding="UTF-8"?>
-<Storage>
-    <Box id="1">
-        <Item id="1"/>
-        <Item color="red" id="2"/>
-    <Box id="3">
-        <Item id="3" color="red" />
-        <Item id="4" color="black" />
-    </Box>
-    <Box id="6"/>
-        <Item id="5"/>
-    </Box>
-    <Item id="6"/>
-</Storage>
+    <?xml version="1.0" encoding="UTF-8"?>
+    
+    <Storage>
+    
+        <Box id="1">
+        
+            <Item id="1"/>
+            
+            <Item color="red" id="2"/>
+            
+        <Box id="3">
+        
+            <Item id="3" color="red" />
+            
+            <Item id="4" color="black" />
+            
+        </Box>
+        
+        <Box id="6"/>
+        
+            <Item id="5"/>
+            
+        </Box>
+        
+        <Item id="6"/>
+        
+    </Storage>
 
 Ссылка имеет следующий формат: type:path, где:
+
     type - тип ссылки
+    
     path - путь к файлу
+    
 Ссылка определяет источник, из которого загружаются данные в XML-формате.
+
 Тип ссылки (type):
+
     file (внешний файл)
+    
     classpath (файл в classpath)
+    
     url (URL)
     
 После загрузки файла приложение работает, как REST-сервис, который возвращает id предметов заданного цвета (Color),
 содержащиеся в ящике c заданным идентификатором (Box) с учётом того, что в ящике может быть ещё ящик с предметами требуемого цвета.
 
 Например, на POST-запрос с телом запроса в JSON вида:
+
     POST /test HTTP/1.1
     Host: localhost
     Accept: application/json
     Content-Type:application/json
     Content-Length: 25
     {"box":"1","color":"red"}
+    
 для вышеприведённого XML ответ вида:
+
     HTTP/1.1 200
     Content-Type: application/json;charset=UTF-8
     Transfer-Encoding: chunked
