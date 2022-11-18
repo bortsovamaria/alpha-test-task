@@ -114,6 +114,8 @@ public class XmlService {
     private void parseItems(final Element element) {
 
         NodeList children = element.getChildNodes();
+        List<Item> items = new ArrayList<>();
+
         for (int i = 0; i < children.getLength(); i++) {
 
             Node node = children.item(i);
@@ -131,21 +133,23 @@ public class XmlService {
                         color = optColor.get().getNodeValue();
                     }
 
-                    ItemDto itemDto =
-                            new ItemDto()
+                    ItemDto itemDto = new ItemDto()
                                     .setId(Integer.parseInt(id))
                                     .setContained(boxId)
                                     .setColor(color);
                     Item entity = mapStructMapper.dtoToItem(itemDto);
-                    itemRepository.save(entity);
+                    items.add(entity);
                 }
                 parseItems((Element) node);
             }
         }
+
+        itemRepository.saveAll(items);
     }
 
     private void parseBoxes(final Element element) {
         NodeList children = element.getChildNodes();
+        List<Box> boxes = new ArrayList<>();
 
         for (int i = 0; i < children.getLength(); i++) {
 
@@ -160,12 +164,12 @@ public class XmlService {
                         .setId(Integer.parseInt(id))
                         .setContained(boxId);
                 Box entity = mapStructMapper.dtoToBox(boxDto);
-                boxRepository.save(entity);
-
+                boxes.add(entity);
                 parseBoxes((Element) node);
 
             }
         }
+        boxRepository.saveAll(boxes);
     }
 
 }

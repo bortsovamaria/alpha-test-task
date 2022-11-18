@@ -68,13 +68,7 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>5.0.12.Final</version>
-		</dependency>
-
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<plugins>

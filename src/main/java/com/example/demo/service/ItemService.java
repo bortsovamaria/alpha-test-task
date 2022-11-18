@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.dao.BoxRepository;
 import com.example.demo.dao.ItemRepository;
-import com.example.demo.domain.Box;
 import com.example.demo.domain.Item;
 import com.example.demo.model.BodyRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +18,16 @@ public class ItemService {
     private final BoxRepository boxRepository;
 
     public List<Integer> getIdsOfItemsByColor(BodyRequest bodyRequest) {
-        List<Box> boxes = boxRepository.getBoxesByContained(bodyRequest.getBox());
-        boxes.addAll(boxRepository.getBoxesById((bodyRequest.getBox())));
 
-        return boxes.stream()
-                .map(m -> itemRepository.getItemsByColorAndContained(bodyRequest.getColor(), m.getId()))
-                .map(l -> l.stream().map(Item::getId).collect(Collectors.toList()))
+        List<Integer> boxesIds = boxRepository.getBoxes(bodyRequest.getBox());
+
+        return boxesIds.stream()
+                .map(m ->  itemRepository.getItemsByColorAndContained(bodyRequest.getColor(), m)
+
+                )
                 .flatMap(List::stream)
+                .distinct()
+                .map(Item::getId)
                 .sorted()
                 .collect(Collectors.toList());
     }

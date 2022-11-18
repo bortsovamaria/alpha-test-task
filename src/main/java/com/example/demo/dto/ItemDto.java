@@ -1,6 +1,5 @@
 package com.example.demo.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -9,6 +8,8 @@ import lombok.experimental.Accessors;
 public class ItemDto {
 
     private Integer id;
+
     private Integer contained;
+
     private String color;
 }

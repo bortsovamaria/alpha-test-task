@@ -1,36 +1,24 @@
 package com.example.demo.service;
 
-import com.example.demo.config.DataOfFile;
 import com.example.demo.config.LoadArgumentsFromCommandLine;
 import com.example.demo.dao.BoxRepository;
 import com.example.demo.dao.ItemRepository;
 import com.example.demo.domain.Box;
 import com.example.demo.domain.Item;
-import com.example.demo.dto.ItemDto;
 import com.example.demo.mapper.MapStructMapper;
 import com.example.demo.model.BodyRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -56,8 +44,12 @@ class ItemServiceTest {
         Box box = new Box();
         box.setId(1);
         boxes.add(box);
+        Box secondBox = new Box();
+        box.setId(2);
+        boxes.add(box);
         when(boxRepository.save(box)).thenReturn(box);
-        when(boxRepository.getBoxesByContained(anyInt())).thenReturn(List.of(box));;
+        when(boxRepository.getBoxes(anyInt())).thenReturn(new ArrayList<>());
+        when(boxRepository.getBoxes(anyInt())).thenReturn(new ArrayList<>());
 
         List<Item> items = new ArrayList<>();
         Item firstItem = new Item();
@@ -69,6 +61,9 @@ class ItemServiceTest {
         firstItem.setId(2);
         firstItem.setContained(1);
         firstItem.setColor("blue");
+
+        when(itemRepository.save(firstItem)).thenReturn(firstItem);
+        when(itemRepository.save(secondItem)).thenReturn(secondItem);
 
         items.add(firstItem);
         items.add(secondItem);

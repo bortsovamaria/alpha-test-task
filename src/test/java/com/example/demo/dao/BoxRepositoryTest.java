@@ -22,8 +22,8 @@ class BoxRepositoryTest {
         box.setId(1);
         box.setContained(2);
         boxRepository.save(box);
-        List<Box> boxes = boxRepository.getBoxesByContained(2);
-        assertTrue(boxes.contains(box));
+        List<Integer> boxes = boxRepository.getBoxes(1);
+        assertTrue(boxes.contains(box.getId()));
     }
 
     @Test
@@ -32,8 +32,8 @@ class BoxRepositoryTest {
         box.setId(1);
         box.setContained(2);
         boxRepository.save(box);
-        List<Box> boxes = boxRepository.getBoxesById(1);
-        assertTrue(boxes.contains(box));
+        List<Integer> boxes = boxRepository.getBoxes(1);
+        assertTrue(boxes.contains(box.getId()));
     }
 
     @Test
@@ -42,8 +42,8 @@ class BoxRepositoryTest {
         box.setId(1);
         box.setContained(2);
         boxRepository.save(box);
-        List<Box> boxes = boxRepository.getBoxesByContained(3);
-        assertFalse(boxes.contains(box));
+        List<Integer> boxesIds = boxRepository.getBoxes(3);
+        assertFalse(boxesIds.contains(box.getId()));
     }
 
     @Test
@@ -52,8 +52,8 @@ class BoxRepositoryTest {
         box.setId(1);
         box.setContained(2);
         boxRepository.save(box);
-        List<Box> boxes = boxRepository.getBoxesById(3);
-        assertFalse(boxes.contains(box));
+        List<Integer> boxesIds = boxRepository.getBoxes(3);
+        assertFalse(boxesIds.contains(box.getId()));
     }
 
 }
